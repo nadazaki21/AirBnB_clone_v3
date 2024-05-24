@@ -53,7 +53,8 @@ def create_city(state_id):
         abort(400, description="Not a JSON")
 
     if not 'name' in data:
-        return "Missing name", 400
+        abort(400, description="Missing name")
+        #return "Missing name", 400
     
     data["state_id"] = state_id
     
