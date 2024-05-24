@@ -14,7 +14,7 @@ def return_status():
 
 @app_views.route('/stats', strict_slashes=False)
 def return_stats():
-    objects_perclass_count = {'amenity': 0, 'city': 0, 'place': 0, 'state': 0, 'user': 0}
+    objects_perclass_count = {'amenities': 0, 'cities': 0, 'places': 0, 'reviews': 0, 'states': 0, 'users': 0}
     for key, value in zip(objects_perclass_count.keys(), classes.values()):
         objects_perclass_count[key] = storage.count(value)
     return (json.dumps(objects_perclass_count, indent=2)) + '\n'
