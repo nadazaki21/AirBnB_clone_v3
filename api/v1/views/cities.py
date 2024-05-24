@@ -37,7 +37,7 @@ def delete_city(city_id):
     else:
         storage.delete(city)
         storage.save()
-        return jsonify({}), 200
+        return {}, 200
 
 @app_views.route('/states/<state_id>/cities', strict_slashes=False, methods=['POST'])
 def create_city(state_id):
