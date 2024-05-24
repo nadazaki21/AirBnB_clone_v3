@@ -18,7 +18,7 @@ def return_cities_of_states(state_id):
         city_list = []
         for city in state.cities:
             city_list.append(city.to_dict())
-        return json.dumps(sorted(city_list), indent=2) +'\n'
+        return json.dumps(city_list, indent=2) +'\n'
     
 @app_views.route('/cities/<city_id>', strict_slashes=False , methods=['GET'])
 def return_city(city_id):
@@ -26,7 +26,8 @@ def return_city(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort(404)
-    return json.dumps(city.to_dict(), indent=2) +'\n'  
+    sorted_dict = dict(sorted(city.to_dict().items()))
+    return json.dumps(sorted_dict, indent=2) +'\n'  
 
 @app_views.route('/cities/<city_id>', strict_slashes=False, methods=['DELETE'])
 def delete_city(city_id):
