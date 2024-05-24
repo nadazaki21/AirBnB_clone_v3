@@ -5,7 +5,7 @@ from models import storage
 from models.city import City
 from models.state import State
 from flask import jsonify, abort, request
-
+import json 
 
 
 @app_views.route('/states/<state_id>/cities', strict_slashes=False, methods=['GET'])
@@ -18,7 +18,7 @@ def return_cities_of_states(state_id):
         city_list = []
         for city in state.cities:
             city_list.append(city.to_dict())
-        return jsonify(city_list)
+        return json.dumps(city_list, indent=2) +'\n'
     
 @app_views.route('/cities/<city_id>', strict_slashes=False , methods=['GET'])
 def return_city(city_id):

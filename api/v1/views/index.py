@@ -10,7 +10,7 @@ import json
 
 @app_views.route('/status', strict_slashes=False)
 def return_status():
-    return json.dumps({"status": "OK"}, indent=2) + '\n'
+    return jsonify({"status": "OK"})
 
 @app_views.route('/stats', strict_slashes=False)
 def return_stats():
