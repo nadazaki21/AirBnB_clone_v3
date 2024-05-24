@@ -17,4 +17,4 @@ def return_stats():
     objects_perclass_count = {'amenity': 0, 'city': 0, 'place': 0, 'state': 0, 'user': 0}
     for key, value in zip(objects_perclass_count.keys(), classes.values()):
         objects_perclass_count[key] = storage.count(value)
-    return (json.dump(objects_perclass_count, indent=2))
+    return (json.dumps(objects_perclass_count, indent=2)) + '\n'
