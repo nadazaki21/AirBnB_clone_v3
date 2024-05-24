@@ -78,8 +78,8 @@ def update_city(city_id):
     for key, value in data.items():
         if key in ['id', 'state_id', 'created_at', 'updated_at']:
             pass
-        # else:
-        #     setattr(city, key, value)
+        else:
+            setattr(city, key, value)
 
     storage.save()
-    return jsonify(city.to_dict())
+    return json.dumps(city.to_dict(),indent=2) + '\n'
