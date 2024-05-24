@@ -61,7 +61,7 @@ def create_city(state_id):
     city = City(**data)
     storage.new(city)
     storage.save()
-    return json.dumps(city.to_dict(),indent=1), 201
+    return json.dumps(city.to_dict(),indent=2), 201
 
 @app_views.route('/cities/<city_id>', strict_slashes=False, methods=['PUT'])
 def update_city(city_id):
@@ -73,13 +73,13 @@ def update_city(city_id):
     try:
         data = request.get_json()
     except (Exception):
-        return "Not a JSON", 400
+        abort(400, description="Not a JSON")
 
     for key, value in data.items():
         if key in ['id', 'state_id', 'created_at', 'updated_at']:
             pass
-        else:
-            setattr(city, key, value)
+        # else:
+        #     setattr(city, key, value)
 
     storage.save()
     return jsonify(city.to_dict())
