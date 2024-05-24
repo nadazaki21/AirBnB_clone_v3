@@ -26,7 +26,7 @@ def return_city(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort(404)
-    return jsonify(city.to_dict())  
+    return json.dumps(city.to_dict(), indent=2) +'\n'  
 
 @app_views.route('/cities/<city_id>', strict_slashes=False, methods=['DELETE'])
 def delete_city(city_id):
