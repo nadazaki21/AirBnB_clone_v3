@@ -50,7 +50,7 @@ def create_city(state_id):
         data = request.get_json()
         #print(f"data looks like {data}")
     except (Exception):
-        return "Not a JSON", 400
+        abort(400, description="Not a JSON")
 
     if not 'name' in data:
         return "Missing name", 400
