@@ -15,7 +15,6 @@ def return_reviews_of_places(place_id):
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
-    # if place.id == place_id:  # diff 1
     reviews_list = []
     for review in place.reviews:
         reviews_list.append(review.to_dict())
@@ -28,8 +27,8 @@ def return_review(review_id):
     review = storage.get(Review, review_id)
     if not review:
         abort(404)
-    sorted_dict = dict(sorted(review.to_dict().items()))  # diff 2
-    return json.dumps(sorted_dict, indent=2) + "\n"
+    # sorted_dict = dict(sorted(review.to_dict().items()))  # diff 2
+    return json.dumps(review.to_dict(), indent=2) + "\n"
 
 
 @app_views.route("/reviews/<review_id>", strict_slashes=False, methods=["DELETE"])
