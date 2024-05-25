@@ -10,7 +10,7 @@ from flask import jsonify, abort, request
 @app_views.route("/users", strict_slashes=False, methods=["GET"])
 def all_users():
     """Retrieves the list of all User objects"""
-    users = storage.all(user).values()
+    users = storage.all(User).values()
     users_list = []
     for user in users:
         users_list.append(user.to_dict())
