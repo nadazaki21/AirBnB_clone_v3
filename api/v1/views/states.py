@@ -9,7 +9,7 @@ from models import storage
 from flask import jsonify, abort, request
 
 
-@app_views.route("states/", methods="GET", strict_slashes=False)
+@app_views.route("states/", strict_slashes=False, methods=["GET"])
 def all_states():
     """Retrieves the list of all State objects: GET /api/v1/states
     """
@@ -22,22 +22,22 @@ def all_states():
     return jsonify(states_list)
 
 
-@app_views.route("states/<state_id>", strict_slashes=False)
-def retive_state(STATE_ID):
+@app_views.route("states/<state_id>", strict_slashes=False, methods=["GET"])
+def retive_state(state_id):
     """Retrieves a State object: GET /api/v1/states/<state_id>
     """
-    state = storage.get(State, STATE_ID)
+    state = storage.get(State, state_id)
     if state:
         return jsonify(state.to_dict())
     else:
         abort(404)
 
 
-@app_views.route("states/<state_id>", methods="DELETE", strict_slashes=False)
-def delete_state(STATE_ID):
+@app_views.route("states/<state_id>", strict_slashes=False, methods=["DELETE"])
+def delete_state(state_id):
     """Deletes a State object:: DELETE /api/v1/states/<state_id>
     """
-    state = storage.get(State, STATE_ID)
+    state = storage.get(State, state_id)
     if state:
         storage.delete(state)
         storage.save()
@@ -46,7 +46,7 @@ def delete_state(STATE_ID):
         abort(404)
 
 
-@app_views.route("states/", methods="POST", strict_slashes=False)
+@app_views.route("states/", strict_slashes=False, methods=["POST"])
 def create_state():
     """Creates a State: POST /api/v1/states
     """
@@ -67,14 +67,14 @@ def create_state():
     return jsonify(new_state.to_dict()), 201
 
 
-@app_views.route("states/<state_id>", methods="PUT", strict_slashes=False)
-def update_state(STATE_ID):
+@app_views.route("states/<state_id>", strict_slashes=False, methods=["PUT"])
+def update_state(state_id):
     """Updates a State object: PUT /api/v1/states/<state_id>
     """
     if request.content_type != "application/json":
         abort(400, "Not a JSON")
 
-    state = storage.get(State, STATE_ID)
+    state = storage.get(State, state_id)
     if state:
         if not request.get_json():
             abort(400, "Not a JSON")
