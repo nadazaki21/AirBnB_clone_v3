@@ -17,7 +17,9 @@ def all_amenities():
     return jsonify(ameniies_list)
 
 
-@app_views.route("/amenities/<amenity_id>", strict_slashes=False, methods=["GET"])
+@app_views.route(
+    "/amenities/<amenity_id>", strict_slashes=False,
+    methods=["GET"])
 def retive_amenity(amenity_id):
     """Retrieves a specific Amnity object"""
     amenity = storage.get(Amenity, amenity_id)
@@ -27,7 +29,9 @@ def retive_amenity(amenity_id):
         abort(404)
 
 
-@app_views.route("/amenities/<amenity_id>", strict_slashes=False, methods=["DELETE"])
+@app_views.route(
+    "/amenities/<amenity_id>", strict_slashes=False,
+    methods=["DELETE"])
 def delete_amenity(amenity_id):
     """Deletes a single  Amenity object"""
     amenity = storage.get(Amenity, amenity_id)
@@ -56,9 +60,11 @@ def create_amenity():
     return jsonify(new_amenity.to_dict()), 201
 
 
-@app_views.route("amenities/<amenity_id>", strict_slashes=False, methods=["PUT"])
+@app_views.route(
+    "amenities/<amenity_id>", strict_slashes=False,
+    methods=["PUT"])
 def update_amenity(amenity_id):
-    """Updates a amenity_id object """
+    """Updates a amenity_id object"""
     try:
         data = request.get_json()
     except Exception:
