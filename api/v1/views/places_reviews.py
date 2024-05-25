@@ -9,7 +9,8 @@ from flask import jsonify, abort, request
 import json
 
 
-@app_views.route("/places/<place_id>/reviews", strict_slashes=False, methods=["GET"])
+@app_views.route("/places/<place_id>/reviews",
+                 strict_slashes=False, methods=["GET"])
 def return_reviews_of_places(place_id):
     """views all reviws of a place"""
     place = storage.get(Place, place_id)
@@ -31,7 +32,8 @@ def return_review(review_id):
     return json.dumps(review.to_dict(), indent=2) + "\n"
 
 
-@app_views.route("/reviews/<review_id>", strict_slashes=False, methods=["DELETE"])
+@app_views.route("/reviews/<review_id>",
+                 strict_slashes=False, methods=["DELETE"])
 def delete_review(review_id):
     """deleetes a review"""
     review = storage.get(Review, review_id)
@@ -43,7 +45,8 @@ def delete_review(review_id):
         return {}, 200
 
 
-@app_views.route("/places/<place_id>/reviews", strict_slashes=False, methods=["POST"])
+@app_views.route("/places/<place_id>/reviews",
+                 strict_slashes=False, methods=["POST"])
 def create_review(place_id):
     """creates a review"""
     place = storage.get(Place, place_id)
