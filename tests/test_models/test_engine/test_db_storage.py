@@ -68,7 +68,7 @@ test_db_storage.py'])
                             "{:s} method needs a docstring".format(func[0]))
 
 
-class TestFileStorage(unittest.TestCase):
+class TestDBStorage(unittest.TestCase):
     """Test the FileStorage class"""
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_returns_dict(self):
@@ -78,11 +78,43 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_no_class(self):
         """Test that all returns all rows when no class is passed"""
-
+        all_objs = models.storage.all()
+        self.assertIn('State.' + self.state.id, all_objs)
+        self.assertGreaterEqual(len(all_objs), 1)
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
         """test that new adds an object to the database"""
-
+        new_state = State(name="Testland")
+        models.storage.new(new_state)
+        models.storage.save()
+        self.assertIn('State.' + new_state.id, models.storage.all())
+        models.storage.delete(new_state)
+        models.storage.save()
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+        new_state = State(name="SaveTest")
+        models.storage.new(new_state)
+        models.storage.save()
+        self.assertIn('State.' + new_state.id, models.storage.all())
+        models.storage.delete(new_state)
+        models.storage.save()
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get(self):
+        """Test the get method"""
+        obj = self.storage.get(State, self.state.id)
+        self.assertEqual(obj.id, self.state.id)
+        self.assertIsNone(self.storage.get(State, "nonexistent_id"))
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_count(self):
+        """Test the count method"""
+        initial_count = self.storage.count()
+        self.assertEqual(self.storage.count(State), 1)
+        self.assertEqual(self.storage.count(City), 1)
+        new_state = State(name="Texas")
+        self.storage.new(new_state)
+        self.storage.save()
+        self.assertEqual(self.storage.count(), initial_count + 1)
+        self.assertEqual(self.storage.count(State), 2)
+        self.storage.delete(new_state)
+        self.storage.save()
