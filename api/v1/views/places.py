@@ -6,7 +6,6 @@ from models.city import City
 from models.place import Place
 from models.user import User
 from flask import jsonify, abort, request
-import json
 
 
 @app_views.route("/cities/<city_id>/places", strict_slashes=False, methods=["GET"])
@@ -19,7 +18,7 @@ def return_places_of_cities(city_id):
     place_list = []
     for place in city.places:
         place_list.append(place.to_dict())
-    return json.dumps(place_list, indent=2) + "\n"
+    return jsonify(place_list)
 
 
 @app_views.route("/places/<place_id>", strict_slashes=False, methods=["GET"])
@@ -28,7 +27,7 @@ def return_place(place_id):
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
-    return json.dumps(place.to_dict(), indent=2) + "\n"
+    return jsonify(place.to_dict())
 
 
 @app_views.route("/places/<place_id>", strict_slashes=False, methods=["DELETE"])
@@ -70,12 +69,12 @@ def create_place(city_id):
     place = Place(**data)
     storage.new(place)
     storage.save()
-    return json.dumps(place.to_dict(), indent=2), 201
+    return jsonify(place.to_dict()), 201
 
 
 @app_views.route("/places/<place_id>", strict_slashes=False, methods=["PUT"])
 def update_place(place_id):
-    """ updates a place """
+    """updates a place"""
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
@@ -92,4 +91,4 @@ def update_place(place_id):
             setattr(place, key, value)
 
     storage.save()
-    return json.dumps(place.to_dict(), indent=2) + "\n", 200
+    return jsonify(place.to_dict()), 200
