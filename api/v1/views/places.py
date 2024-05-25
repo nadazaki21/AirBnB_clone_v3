@@ -53,7 +53,7 @@ def create_place(city_id):
         abort(404)
 
     if not request.get_json():
-        abort(400, description="Not a JSON") 
+        abort(400, description="Not a JSON")
     data = request.get_json()
     if "user_id" not in data:
         abort(400, description="Missing user_id")
@@ -80,10 +80,9 @@ def update_place(place_id):
     if not place:
         abort(404)
 
-    try:
-        data = request.get_json()
-    except Exception:
+    if not request.get_json():
         abort(400, description="Not a JSON")
+    data = request.get_json()
 
     for key, value in data.items():
         if key in ["id", "created_at", "updated_at", "user_id", "city_id"]:
