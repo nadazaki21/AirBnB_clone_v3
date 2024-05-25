@@ -33,6 +33,7 @@ def delete_user(user_id):
     if user:
         storage.delete(user)
         storage.save()
+        return jsonify({}), 200
     else:
         abort(404)
 
@@ -41,10 +42,11 @@ def delete_user(user_id):
 def create_user():
     """Creates an new user object"""
 
-    try:
-        data = request.get_json()
-    except Exception:
-        abort(400, description="Not a JSON")
+    if request.content_type != "application\json":
+        return abort(400, "Not a JSON")
+    if not request.get_json():
+        return abort(400, "Not a JSON")
+    data = request.get_json()
 
     if "email" not in data:
         abort(400, description="Missing email")
@@ -53,7 +55,7 @@ def create_user():
 
     new_user = User(**data)
     new_user.save()
-    return jsonify(new_user.to_dict()), 201
+    return jsonify(new_user.to_dict()), 200
 
 
 @app_views.route("users/<user_id>", strict_slashes=False, methods=["PUT"])
