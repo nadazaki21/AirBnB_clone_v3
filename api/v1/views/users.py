@@ -13,7 +13,6 @@ def all_users():
     users_list = []
     for user in users:
         users_list.append(user.to_dict())
-
     return jsonify(users_list)
 
 
@@ -34,7 +33,6 @@ def delete_user(user_id):
     if user:
         storage.delete(user)
         storage.save()
-        return jsonify({}), 200
     else:
         abort(404)
 
