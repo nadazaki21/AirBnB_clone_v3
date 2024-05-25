@@ -44,7 +44,7 @@ class DBStorage:
         """query on the current database session"""
         new_dict = {}
         for clss in classes:
-            #print(f"clss is {clss}")
+            # print(f"clss is {clss}")
             if cls is None or cls is classes[clss] or cls is clss:
                 objs = self.__session.query(classes[clss]).all()
                 for obj in objs:
@@ -75,7 +75,7 @@ class DBStorage:
     def close(self):
         """call remove() method on the private session attribute"""
         self.__session.remove()
-        
+
     def get(self, cls, id):
         """Returns the object based on the class and its ID"""
         if cls is None or id is None:
@@ -85,7 +85,7 @@ class DBStorage:
             if obj.id == id:
                 return obj
         return None
-    
+
     def count(self, cls=None):
         """Returns the number of objects in storage matching the given class"""
         count = 0
