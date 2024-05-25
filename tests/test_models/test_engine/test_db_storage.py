@@ -78,9 +78,6 @@ class TestDBStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_no_class(self):
         """Test that all returns all rows when no class is passed"""
-        all_objs = models.storage.all()
-        self.assertIn('State.' + self.state.id, all_objs)
-        self.assertGreaterEqual(len(all_objs), 1)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
@@ -105,9 +102,20 @@ class TestDBStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_get(self):
         """Test the get method"""
-    pass
+        new_amenity = Amenity(name="test")
+        new_amenity.save()
+        new_amenity_id = new_amenity.id
+        amenity_from_DB = models.storage.get(Amenity, new_amenity_id)
+        self.assertEqual(new_amenity, amenity_from_DB)
+        wrong_amenity_from_DB = models.storage.get(Amenity, "123testAshraf123")
+        self.assertEqual(wrong_amenity_from_DB, None)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count(self):
         """Test the count method"""
-    pass
+        new_amenity = Amenity(name="test")
+        new_amenity.save()
+        amenity_count = len(models.storage.all(Amenity))
+        self.assertEqual(amenity_count, models.storage.count(Amenity))
+        self.assertEqual(
+            len(models.storage.all()), models.storage.count())

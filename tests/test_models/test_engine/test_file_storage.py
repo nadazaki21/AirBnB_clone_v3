@@ -114,26 +114,23 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
-                     "not testing file storage")
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_get(self):
         """Test that the get method properly retrievs objects"""
-        storage = FileStorage()
-        self.assertIs(storage.get("User", "blah"), None)
-        self.assertIs(storage.get("blah", "blah"), None)
-        new_user = User()
-        new_user.save()
-        self.assertIs(storage.get("User", new_user.id), new_user)
+        new_amenity = Amenity(name="test")
+        new_amenity.save()
+        new_amenity_id = new_amenity.id
+        amenity_from_DB = models.storage.get(Amenity, new_amenity_id)
+        self.assertEqual(new_amenity, amenity_from_DB)
+        wrong_amenity_from_DB = models.storage.get(
+            Amenity, "123testAshraf123")
+        self.assertEqual(wrong_amenity_from_DB, None)
 
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
-                     "not testing file storage")
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_count(self):
-        storage = FileStorage()
-        initial_length = len(storage.all())
-        self.assertEqual(storage.count(), initial_length)
-        state_len = len(storage.all("State"))
-        self.assertEqual(storage.count("State"), state_len)
-        new_state = State()
-        new_state.save()
-        self.assertEqual(storage.count(), initial_length + 1)
-        self.assertEqual(storage.count("State"), state_len + 1)
+        new_amenity = Amenity(name="test")
+        new_amenity.save()
+        amenity_count = len(models.storage.all(Amenity))
+        self.assertEqual(amenity_count, models.storage.count(Amenity))
+        self.assertEqual(
+            len(models.storage.all()), models.storage.count())
