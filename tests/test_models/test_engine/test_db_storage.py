@@ -81,6 +81,7 @@ class TestDBStorage(unittest.TestCase):
         all_objs = models.storage.all()
         self.assertIn('State.' + self.state.id, all_objs)
         self.assertGreaterEqual(len(all_objs), 1)
+
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
         """test that new adds an object to the database"""
@@ -90,6 +91,7 @@ class TestDBStorage(unittest.TestCase):
         self.assertIn('State.' + new_state.id, models.storage.all())
         models.storage.delete(new_state)
         models.storage.save()
+
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
@@ -99,12 +101,14 @@ class TestDBStorage(unittest.TestCase):
         self.assertIn('State.' + new_state.id, models.storage.all())
         models.storage.delete(new_state)
         models.storage.save()
+
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_get(self):
         """Test the get method"""
         obj = self.storage.get(State, self.state.id)
         self.assertEqual(obj.id, self.state.id)
         self.assertIsNone(self.storage.get(State, "nonexistent_id"))
+
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count(self):
         """Test the count method"""
