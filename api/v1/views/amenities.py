@@ -73,9 +73,9 @@ def update_amenity(amenity_id):
     amenity = storage.get(Amenity, amenity_id)
 
     if amenity:
-        if not request.get_json():
-            abort(400, "Not a JSON")
-        data = request.get_json()
+        # if not request.get_json():
+        #     abort(400, "Not a JSON")
+        # data = request.get_json()
         ignore_keys = ["id", "created_at", "updated_at"]
 
         for key, value in data.items():

@@ -19,7 +19,7 @@ def all_users():
 
 @app_views.route("/users/<user_id>", strict_slashes=False, methods=["GET"])
 def retive_user(user_id):
-    """Retrieves a specific Amnity object"""
+    """Retrieves a specific User object"""
     user = storage.get(User, user_id)
     if user:
         return jsonify(user.to_dict())
