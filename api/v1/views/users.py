@@ -42,11 +42,10 @@ def delete_user(user_id):
 def create_user():
     """Creates an new user object"""
 
-    if request.content_type != "application\json":
-        return abort(400, "Not a JSON")
-    if not request.get_json():
-        return abort(400, "Not a JSON")
-    data = request.get_json()
+    try:
+        data = request.get_json()
+    except Exception:
+        abort(400, description="Not a JSON")
 
     if "email" not in data:
         abort(400, description="Missing email")
