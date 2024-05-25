@@ -64,7 +64,7 @@ def create_amenity():
     "amenities/<amenity_id>", strict_slashes=False,
     methods=["PUT"])
 def update_amenity(amenity_id):
-    """Updates a amenity_id object"""
+    """ Updates a amenity_id object """
     try:
         data = request.get_json()
     except Exception:
@@ -73,9 +73,6 @@ def update_amenity(amenity_id):
     amenity = storage.get(Amenity, amenity_id)
 
     if amenity:
-        # if not request.get_json():
-        #     abort(400, "Not a JSON")
-        # data = request.get_json()
         ignore_keys = ["id", "created_at", "updated_at"]
 
         for key, value in data.items():
