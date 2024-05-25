@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-""" User view
-"""
+""" User view """
 from api.v1.views import app_views
 from models.user import User
 from models import storage
@@ -61,7 +60,7 @@ def create_user():
 
 @app_views.route("users/<user_id>", strict_slashes=False, methods=["PUT"])
 def update_user(user_id):
-    """Updates a user object: PUT /api/v1/users/<user_id>"""
+    """ Updates a user object """
     try:
         data = request.get_json()
     except Exception:
@@ -70,9 +69,6 @@ def update_user(user_id):
     user = storage.get(User, user_id)
 
     if user:
-        # if not request.get_json():
-        #     abort(400, "Not a JSON")
-        # data = request.get_json()
         ignore_keys = ["id", "created_at", "updated_at", "email"]
 
         for key, value in data.items():
