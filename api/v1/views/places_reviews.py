@@ -46,7 +46,7 @@ def delete_review(review_id):
 
 @app_views.route("/places/<place_id>/reviews", strict_slashes=False, methods=["POST"])
 def create_review(place_id):
-    """creates a city"""
+    """creates a review"""
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
@@ -75,8 +75,8 @@ def create_review(place_id):
 
 
 @app_views.route("/reviews/<review_id>", strict_slashes=False, methods=["PUT"])
-def update_city(review_id):
-    """updates a city"""
+def update_review(review_id):
+    """updates a review"""
     review = storage.get(Review, review_id)
     if not review:
         abort(404)
