@@ -8,8 +8,7 @@ from models.user import User
 from flask import jsonify, abort, request
 
 
-@app_views.route("/cities/<city_id>/places",
-                 strict_slashes=False, methods=["GET"])
+@app_views.route("/cities/<city_id>/places", strict_slashes=False, methods=["GET"])
 def return_places_of_cities(city_id):
     """views all places of a city"""
     city = storage.get(City, city_id)
@@ -31,8 +30,7 @@ def return_place(place_id):
     return jsonify(place.to_dict())
 
 
-@app_views.route("/places/<place_id>",
-                 strict_slashes=False, methods=["DELETE"])
+@app_views.route("/places/<place_id>", strict_slashes=False, methods=["DELETE"])
 def delete_place(place_id):
     """deleetes a place"""
     place = storage.get(Place, place_id)
@@ -44,8 +42,7 @@ def delete_place(place_id):
         return jsonify({}), 200
 
 
-@app_views.route("/cities/<city_id>/places",
-                 strict_slashes=False, methods=["POST"])
+@app_views.route("/cities/<city_id>/places", strict_slashes=False, methods=["POST"])
 def create_place(city_id):
     """creates a place"""
     city = storage.get(City, city_id)
@@ -92,3 +89,62 @@ def update_place(place_id):
 
     storage.save()
     return jsonify(place.to_dict()), 200
+
+
+@app_views.route("/places_search", strict_slashes=False, methods=["POST"])
+def places_search():
+    """searches for places"""
+    if not request.get_json():
+        abort(400, description="Not a JSON")
+    data = request.get_json()
+    if not data:
+        abort(400, description="Not a JSON")
+
+    final_list = []
+    if data == {}:
+        places = storage.all(Place).values()
+        list_places = [place.to_dict() for place in places]
+        return jsonify(list_places)
+
+    elif "states" in data and data["states"] != []:
+        for state in data["states"]:
+            for city in storage.all(City).values():
+                if "city" in data and data["city"] != []:
+                    if city.state_id == state or city.id in data["cities"]:
+                        for place in storage.all(Place).values():
+                            if place.city_id == city.id:
+                                final_list.append(place.to_dict())
+                else:
+                    if city.state_id == state:
+                        for place in storage.all(Place).values():
+                            if place.city_id == city.id:
+                                final_list.append(place.to_dict())
+
+        if "amenities" in data and data["amenities"] != []:
+            for item in final_list:
+                for amenity in item.amenities:
+                    if amenity.id not in data["amenities"]:
+                        final_list.remove(item)
+
+    elif "cities" in data and data["cities"] != []:
+        for city in data["cities"]:
+            for place in storage.all(Place).values():
+                if place.city_id == city:
+                    final_list.append(place.to_dict())
+
+        if "amenities" in data and data["amenities"] != []:
+            for item in final_list:
+                for amenity in item.amenities:
+                    if amenity.id not in data["amenities"]:
+                        final_list.remove(item)
+
+    else:
+        for place in storage.all(Place).values():
+            final_list.append(place.to_dict())
+
+        for item in final_list:
+            for amenity in item.amenities:
+                if amenity.id not in data["amenities"]:
+                    final_list.remove(item)
+
+    return jsonify(final_list)
