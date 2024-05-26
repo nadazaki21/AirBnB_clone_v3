@@ -126,6 +126,9 @@ def places_search():
                 for amenity in item.amenities:
                     if amenity.id not in data["amenities"]:
                         final_list.remove(item)
+        
+        #remove duplicates
+        final_list = list(set(final_list))
 
     elif "cities" in data and data["cities"] != []:
         for city in data["cities"]:
@@ -155,58 +158,3 @@ def places_search():
 
 
 
-
-
-
-
-
-# @app_views.route("/places_search", strict_slashes=False, methods=["POST"])
-# def places_search():
-#     """searches for places"""
-#     if not request.is_json:
-#         abort(400, description="Not a JSON")
-#     data = request.get_json()
-    
-#     # If JSON body is empty, return all places
-#     if not data:
-#         places = storage.all(Place).values()
-#         list_places = [place.to_dict() for place in places]
-#         return jsonify(list_places)
-    
-#     states = data.get("states", [])
-#     cities = data.get("cities", [])
-#     amenities = data.get("amenities", [])
-
-#     places = set()
-
-#     # If states list is not empty
-#     if states:
-#         for state_id in states:
-#             state = storage.get(State, state_id)
-#             if state:
-#                 for city in state.cities:
-#                     for place in city.places:
-#                         places.add(place)
-    
-#     # If cities list is not empty
-#     if cities:
-#         for city_id in cities:
-#             city = storage.get(City, city_id)
-#             if city:
-#                 for place in city.places:
-#                     places.add(place)
-    
-#     # Convert places set to list of dictionaries
-#     places = list(places)
-#     list_places = [place.to_dict() for place in places]
-
-#     # If amenities list is not empty
-#     if amenities:
-#         final_places = []
-#         for place in places:
-#             place_amenities = [amenity.id for amenity in place.amenities]
-#             if all(amenity in place_amenities for amenity in amenities):
-#                 final_places.append(place.to_dict())
-#         return jsonify(final_places)
-
-#     return jsonify(list_places)
