@@ -102,8 +102,7 @@ def places_search():
         abort(400, description="Not a JSON")
 
     final_list = []
-    pre_final_list = []
-    if data == {} or not data:
+    if data == {}:
         places = storage.all(Place).values()
         list_places = [place.to_dict() for place in places]
         return jsonify(list_places)
@@ -115,21 +114,21 @@ def places_search():
                     if city.state_id == state or city.id in data["cities"]:
                         for place in storage.all(Place).values():
                             if place.city_id == city.id:
-                                pre_final_list.append(place.to_dict())
+                                final_list.append(place.to_dict())
                 else:
                     if city.state_id == state:
                         for place in storage.all(Place).values():
                             if place.city_id == city.id:
-                                pre_final_list.append(place.to_dict())
+                                final_list.append(place.to_dict())
 
         if "amenities" in data and data["amenities"] != []:
-            present_amenities = []
-            for item in pre_final_list:
+            for item in final_list:
                 for amenity in item.amenities:
-                    present_amenities.append(amenity.id)
-                if present_amenities <= data["amenities"]:
-                    final_list.append(item)
-                
+                    if amenity.id not in data["amenities"]:
+                        final_list.remove(item)
+        
+        #remove duplicates
+        final_list = list(set(final_list))
 
     elif "cities" in data and data["cities"] != []:
         for city in data["cities"]:
