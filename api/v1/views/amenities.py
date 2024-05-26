@@ -1,69 +1,84 @@
 #!/usr/bin/python3
-""" script that defines a Flask blueprint resources"""
-
-
-from api.v1.views import app_views, storage
-from flask import jsonify, abort, request
+""" Amenity View """
+from api.v1.views import app_views
 from models.amenity import Amenity
+from models import storage
+from flask import jsonify, abort, request
 
 
-@app_views.route('/amenities/', methods=['GET'])
-@app_views.route('/amenities/<amenity_id>', methods=['GET'])
-def get_amenities(amenity_id=None):
-    """Retrieves the list of all Amenity objects or one Amenity"""
-    amenity_dict = storage.all("Amenity")
-    if amenity_id is None:
-        amenities_list = []
-        for obj in amenity_dict.values():
-            amenities_list.append(obj.to_dict())
-        return jsonify(amenities_list)
-    try:
-        return jsonify(amenity_dict[f"Amenity.{amenity_id}"].to_dict())
-    except Exception:
+@app_views.route("/amenities", strict_slashes=False, methods=["GET"])
+def all_amenities():
+    """Retrieves the list of all Amenity objects"""
+    amenities = storage.all(Amenity).values()
+    ameniies_list = []
+    for amenity in amenities:
+        ameniies_list.append(amenity.to_dict())
+
+    return jsonify(ameniies_list)
+
+
+@app_views.route(
+    "/amenities/<amenity_id>", strict_slashes=False,
+    methods=["GET"])
+def retive_amenity(amenity_id):
+    """Retrieves a specific Amnity object"""
+    amenity = storage.get(Amenity, amenity_id)
+    if amenity:
+        return jsonify(amenity.to_dict())
+    else:
         abort(404)
 
 
-@app_views.route('/amenities/<amenity_id>', methods=['DELETE'])
-def del_amenities(amenity_id):
-    """Deletes Amenity object"""
-    amenity_dict = storage.all("Amenity")
-    try:
-        storage.delete(amenity_dict[f"Amenity.{amenity_id}"])
+@app_views.route(
+    "/amenities/<amenity_id>", strict_slashes=False,
+    methods=["DELETE"])
+def delete_amenity(amenity_id):
+    """Deletes a single  Amenity object"""
+    amenity = storage.get(Amenity, amenity_id)
+    if amenity:
+        storage.delete(amenity)
         storage.save()
-        return jsonify({})
-    except Exception:
+        return jsonify({}), 200
+    else:
         abort(404)
 
 
-@app_views.route('/amenities/', methods=['POST'])
-def add_amenities():
-    """Adds Amenity object"""
+@app_views.route("/amenities", strict_slashes=False, methods=["POST"])
+def create_amenity():
+    """Creates an new Amenity object"""
+
     try:
-        http_dic = request.get_json()
+        data = request.get_json()
     except Exception:
-        abort(400, 'Not a JSON')
-    try:
-        name = http_dic["name"]
-    except KeyError:
-        abort(400, 'Missing name')
-    new_amenity = Amenity(**http_dic)
+        abort(400, description="Not a JSON")
+
+    if "name" not in data:
+        abort(400, description="Missing name")
+
+    new_amenity = Amenity(**data)
     new_amenity.save()
     return jsonify(new_amenity.to_dict()), 201
 
 
-@app_views.route('/amenities/<amenity_id>', methods=['PUT'])
-def edit_amenities(amenity_id):
-    """Edits Amenity object"""
-    amenity_dict = storage.all("Amenity")
+@app_views.route(
+    "amenities/<amenity_id>", strict_slashes=False,
+    methods=["PUT"])
+def update_amenity(amenity_id):
+    """ Updates a amenity_id object """
     try:
-        amenity = amenity_dict[f"Amenity.{amenity_id}"]
-    except KeyError:
-        abort(404)
-    try:
-        http_dic = request.get_json()
+        data = request.get_json()
     except Exception:
-        abort(400, 'Not a JSON')
-    for key, value in http_dic.items():
-        setattr(amenity, key, value)
-    amenity.save()
-    return jsonify(amenity.to_dict()), 200
+        abort(400, description="Not a JSON")
+
+    amenity = storage.get(Amenity, amenity_id)
+
+    if amenity:
+        ignore_keys = ["id", "created_at", "updated_at"]
+
+        for key, value in data.items():
+            if key not in ignore_keys:
+                setattr(amenity, key, value)
+        amenity.save()
+        return jsonify(amenity.to_dict()), 200
+    else:
+        abort(404)
