@@ -127,9 +127,6 @@ def places_search():
                     if amenity.id not in data["amenities"]:
                         final_list.remove(item)
         
-        #remove duplicates
-        final_list = list(set(final_list))
-
     elif "cities" in data and data["cities"] != []:
         for city in data["cities"]:
             for place in storage.all(Place).values():
