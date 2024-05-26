@@ -1,14 +1,16 @@
 #!/usr/bin/python3
-"""this script to define app_views"""
+"""
+Flask App
+"""
 from api.v1.views import app_views
 from flask import jsonify
 from models import storage
 from models.engine.db_storage import classes
+import json
 
 
-@app_views.route('/status')
-def view():
-    """return json"""
+@app_views.route("/status", strict_slashes=False)
+def return_status():
     return jsonify({"status": "OK"})
 
 
@@ -24,4 +26,4 @@ def return_stats():
     }
     for key, value in zip(objects_perclass_count.keys(), classes.values()):
         objects_perclass_count[key] = storage.count(value)
-    return jsonify(objects_perclass_count)
+    return (json.dumps(objects_perclass_count, indent=2)) + "\n"
