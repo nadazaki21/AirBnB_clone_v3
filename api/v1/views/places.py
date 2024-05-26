@@ -102,7 +102,7 @@ def places_search():
         abort(400, description="Not a JSON")
 
     final_list = []
-    if data == {}:
+    if data == {} or not data:
         places = storage.all(Place).values()
         list_places = [place.to_dict() for place in places]
         return jsonify(list_places)
@@ -127,8 +127,9 @@ def places_search():
                     if amenity.id not in data["amenities"]:
                         final_list.remove(item)
         
-        #remove duplicates
-        final_list = list(set(final_list))
+    #    #remove duplicates
+    #    for item in final_list:
+           
 
     elif "cities" in data and data["cities"] != []:
         for city in data["cities"]:
