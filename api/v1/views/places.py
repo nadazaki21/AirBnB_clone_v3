@@ -102,6 +102,7 @@ def places_search():
         abort(400, description="Not a JSON")
 
     final_list = []
+    pre_final_list = []
     if data == {} or not data:
         places = storage.all(Place).values()
         list_places = [place.to_dict() for place in places]
@@ -114,21 +115,23 @@ def places_search():
                     if city.state_id == state or city.id in data["cities"]:
                         for place in storage.all(Place).values():
                             if place.city_id == city.id:
-                                final_list.append(place.to_dict())
+                                pre_final_list.append(place.to_dict())
                 else:
                     if city.state_id == state:
                         for place in storage.all(Place).values():
                             if place.city_id == city.id:
-                                final_list.append(place.to_dict())
+                                pre_final_list.append(place.to_dict())
 
         if "amenities" in data and data["amenities"] != []:
             for item in final_list:
                 for amenity in item.amenities:
                     if amenity.id not in data["amenities"]:
-                        final_list.remove(item)
+                        pre_final_list.remove(item)
         
-    #    #remove duplicates
-    #    for item in final_list:
+       #remove duplicates
+        for item in pre_final_list:
+            if item not in final_list:
+                final_list.append(item)
            
 
     elif "cities" in data and data["cities"] != []:
