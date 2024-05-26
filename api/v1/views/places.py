@@ -143,4 +143,12 @@ def places_search():
     # serialize to json
     result = [storage.get(Place, place.id).to_dict() for place in result]
     
+    
+    keys_to_remove = ["amenities", "reviews", "amenity_ids"]
+    result = [
+        {k: v for k, v in place_dict.items() if k not in keys_to_remove}
+        for place_dict in result
+    ]
+    
+    
     return jsonify(result)
