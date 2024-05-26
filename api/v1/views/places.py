@@ -143,6 +143,5 @@ def places_search():
 
     # serialize to json
     result = [storage.get(Place, place.id).to_dict() for place in result]
-    
-    
+
     return json.dumps(result, indent=2) + "\n"
