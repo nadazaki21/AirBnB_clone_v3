@@ -123,16 +123,13 @@ def places_search():
                                 pre_final_list.append(place.to_dict())
 
         if "amenities" in data and data["amenities"] != []:
-            for item in final_list:
+            present_amenities = []
+            for item in pre_final_list:
                 for amenity in item.amenities:
-                    if amenity.id not in data["amenities"]:
-                        pre_final_list.remove(item)
-        
-       #remove duplicates
-        for item in pre_final_list:
-            if item not in final_list:
-                final_list.append(item)
-           
+                    present_amenities.append(amenity.id)
+                if present_amenities <= data["amenities"]:
+                    final_list.append(item)
+                
 
     elif "cities" in data and data["cities"] != []:
         for city in data["cities"]:
