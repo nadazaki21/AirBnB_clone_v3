@@ -5,6 +5,7 @@ from models import storage
 from models.city import City
 from models.place import Place
 from models.user import User
+from models.state import State
 from flask import jsonify, abort, request
 
 
@@ -91,60 +92,113 @@ def update_place(place_id):
     return jsonify(place.to_dict()), 200
 
 
+# @app_views.route("/places_search", strict_slashes=False, methods=["POST"])
+# def places_search():
+#     """searches for places"""
+#     if not request.get_json():
+#         abort(400, description="Not a JSON")
+#     data = request.get_json()
+#     if not data:
+#         abort(400, description="Not a JSON")
+
+#     final_list = []
+#     if data == {}:
+#         places = storage.all(Place).values()
+#         list_places = [place.to_dict() for place in places]
+#         return jsonify(list_places)
+
+#     elif "states" in data and data["states"] != []:
+#         for state in data["states"]:
+#             for city in storage.all(City).values():
+#                 if "city" in data and data["city"] != []:
+#                     if city.state_id == state or city.id in data["cities"]:
+#                         for place in storage.all(Place).values():
+#                             if place.city_id == city.id:
+#                                 final_list.append(place.to_dict())
+#                 else:
+#                     if city.state_id == state:
+#                         for place in storage.all(Place).values():
+#                             if place.city_id == city.id:
+#                                 final_list.append(place.to_dict())
+
+#         if "amenities" in data and data["amenities"] != []:
+#             for item in final_list:
+#                 for amenity in item.amenities:
+#                     if amenity.id not in data["amenities"]:
+#                         final_list.remove(item)
+
+#     elif "cities" in data and data["cities"] != []:
+#         for city in data["cities"]:
+#             for place in storage.all(Place).values():
+#                 if place.city_id == city:
+#                     final_list.append(place.to_dict())
+
+#         if "amenities" in data and data["amenities"] != []:
+#             for item in final_list:
+#                 for amenity in item.amenities:
+#                     if amenity.id not in data["amenities"]:
+#                         final_list.remove(item)
+
+#     else:
+#         for place in storage.all(Place).values():
+#             final_list.append(place.to_dict())
+
+#         for item in final_list:
+#             for amenity in item.amenities:
+#                 if amenity.id not in data["amenities"]:
+#                     final_list.remove(item)
+
+#     return jsonify(final_list)
+
+
+
 @app_views.route("/places_search", strict_slashes=False, methods=["POST"])
 def places_search():
     """searches for places"""
-    if not request.get_json():
+    if not request.is_json:
         abort(400, description="Not a JSON")
     data = request.get_json()
+    
+    # If JSON body is empty, return all places
     if not data:
-        abort(400, description="Not a JSON")
-
-    final_list = []
-    if data == {}:
         places = storage.all(Place).values()
         list_places = [place.to_dict() for place in places]
         return jsonify(list_places)
+    
+    states = data.get("states", [])
+    cities = data.get("cities", [])
+    amenities = data.get("amenities", [])
 
-    elif "states" in data and data["states"] != []:
-        for state in data["states"]:
-            for city in storage.all(City).values():
-                if "city" in data and data["city"] != []:
-                    if city.state_id == state or city.id in data["cities"]:
-                        for place in storage.all(Place).values():
-                            if place.city_id == city.id:
-                                final_list.append(place.to_dict())
-                else:
-                    if city.state_id == state:
-                        for place in storage.all(Place).values():
-                            if place.city_id == city.id:
-                                final_list.append(place.to_dict())
+    places = set()
 
-        if "amenities" in data and data["amenities"] != []:
-            for item in final_list:
-                for amenity in item.amenities:
-                    if amenity.id not in data["amenities"]:
-                        final_list.remove(item)
+    # If states list is not empty
+    if states:
+        for state_id in states:
+            state = storage.get(State, state_id)
+            if state:
+                for city in state.cities:
+                    for place in city.places:
+                        places.add(place)
+    
+    # If cities list is not empty
+    if cities:
+        for city_id in cities:
+            city = storage.get(City, city_id)
+            if city:
+                for place in city.places:
+                    places.add(place)
+    
+    # Convert places set to list of dictionaries
+    places = list(places)
+    list_places = [place.to_dict() for place in places]
 
-    elif "cities" in data and data["cities"] != []:
-        for city in data["cities"]:
-            for place in storage.all(Place).values():
-                if place.city_id == city:
-                    final_list.append(place.to_dict())
+    # If amenities list is not empty
+    if amenities:
+        final_places = []
+        for place in places:
+            place_amenities = [amenity.id for amenity in place.amenities]
+            if all(amenity in place_amenities for amenity in amenities):
+                final_places.append(place.to_dict())
+        return jsonify(final_places)
 
-        if "amenities" in data and data["amenities"] != []:
-            for item in final_list:
-                for amenity in item.amenities:
-                    if amenity.id not in data["amenities"]:
-                        final_list.remove(item)
-
-    else:
-        for place in storage.all(Place).values():
-            final_list.append(place.to_dict())
-
-        for item in final_list:
-            for amenity in item.amenities:
-                if amenity.id not in data["amenities"]:
-                    final_list.remove(item)
-
-    return jsonify(final_list)
+    return jsonify(list_places)
